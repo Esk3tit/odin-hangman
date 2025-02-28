@@ -23,15 +23,10 @@ module FileIO
     true
   end
 
-  def self.load_game(game_state, filename = 'hangman_save.yaml')
-    if File.exist?(filename)
-      game_state = YAML.load(File.read(filename))
-      # Convert array back to Set if needed
-      game_state[:incorrect_letters] = Set.new(game_state[:incorrect_letters]) if game_state[:incorrect_letters]
-      return game_state
-    else
-      puts "No save game of that name found!"
-      return false
-    end
+  def self.load_game(filename = 'hangman_save.yaml')
+    game_state = YAML.load(File.read(filename))
+    # Convert array back to Set if needed
+    game_state[:incorrect_letters] = Set.new(game_state[:incorrect_letters]) if game_state[:incorrect_letters]
+    return game_state
   end
 end
