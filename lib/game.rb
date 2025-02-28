@@ -1,4 +1,4 @@
-require_relative 'dictionary'
+require_relative 'fileio'
 
 class Game
 
@@ -13,24 +13,25 @@ class Game
   end
 
   def play
-    p @secret_word
-    puts "Remaining wrong guesses: #{@num_guesses}"
-    puts @guessed_letters.join(' ')
-    print_incorrect_guesses
-    update_guessed_letters(get_letter_guess)
-    p @secret_word
-    puts "Remaining wrong guesses: #{@num_guesses}"
-    puts @guessed_letters.join(' ')
-    print_incorrect_guesses
+    loop do
+      p @secret_word
+      puts "Remaining wrong guesses: #{@num_guesses}"
+      puts @guessed_letters.join(' ')
+      print_incorrect_guesses
+      update_guessed_letters(get_letter_guess)
+      if is_win_or_lose?
+        break
+      end
+    end
   end
 
   def select_secret_word
-    Dictionary.load_dictionary(@dictionary_file).sample
+    FileIO.load_dictionary(@dictionary_file).sample
   end
 
   def get_letter_guess
     loop do
-      print "Enter a letter for your guess: "
+      print "Enter a letter for your guess (or enter 1 to save game): "
       guess = gets.chomp.downcase
       return guess if is_valid_guess?(guess)
       puts "Invalid guess. Please enter a single letter."
@@ -38,7 +39,7 @@ class Game
   end
 
   def is_valid_guess?(input)
-    input.match?(/^[a-zA-z]$/)
+    input.match?(/^[a-zA-z1]$/)
   end
 
   def update_guessed_letters(guess_letter)
@@ -57,5 +58,20 @@ class Game
 
   def print_incorrect_guesses
     puts "Incorrect letters: #{@incorrect_letters.to_a.join(', ')}"
+  end
+
+  def is_win_or_lose?
+    if @guessed_letters.join == @secret_word && @num_guesses > 0
+      puts "Congratulations! You guessed the secret word: #{@secret_word}"
+      return true
+    elsif @num_guesses <= 0
+      puts "You lose! The secret word was: #{@secret_word}"
+      return true
+    end
+    false
+  end
+
+  def save_game
+    
   end
 end
